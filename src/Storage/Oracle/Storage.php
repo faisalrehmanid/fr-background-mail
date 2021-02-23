@@ -48,35 +48,35 @@ class Storage implements StorageInterface
         $sent_log_table,
         $templates_table
     ) {
-        if (
-            !$jobs_table ||
-            !is_string($jobs_table)
-        )
+        if (!$jobs_table ||
+            !is_string($jobs_table)) {
             throw new \Exception('`jobs_table` cannot be empty and must be string');
+        }
 
         $parts = explode('.', $jobs_table);
-        if (count($parts) != 2)
+        if (count($parts) != 2) {
             throw new \Exception('`jobs_table` name format must be like: schema.table_name');
+        }
 
-        if (
-            !$sent_log_table ||
-            !is_string($sent_log_table)
-        )
+        if (!$sent_log_table ||
+            !is_string($sent_log_table)) {
             throw new \Exception('`sent_log_table` cannot be empty and must be string');
+        }
 
         $parts = explode('.', $sent_log_table);
-        if (count($parts) != 2)
+        if (count($parts) != 2) {
             throw new \Exception('`sent_log_table` name format must be like: schema.table_name');
+        }
 
-        if (
-            !$templates_table ||
-            !is_string($templates_table)
-        )
+        if (!$templates_table ||
+            !is_string($templates_table)) {
             throw new \Exception('`templates_table` cannot be empty and must be string');
+        }
 
         $parts = explode('.', $templates_table);
-        if (count($parts) != 2)
+        if (count($parts) != 2) {
             throw new \Exception('`templates_table` name format must be like: schema.table_name');
+        }
 
         $this->DB = $DB;
         $this->jobs_table = strtoupper($jobs_table);
@@ -91,14 +91,14 @@ class Storage implements StorageInterface
      */
     public function getDBStructure()
     {
-        $parts   = explode('.', $this->jobs_table);
-        @$jobs_table_name  = $parts[1];
+        $parts = explode('.', $this->jobs_table);
+        @$jobs_table_name = $parts[1];
 
-        $parts   = explode('.', $this->sent_log_table);
-        @$sent_log_table_name  = $parts[1];
+        $parts = explode('.', $this->sent_log_table);
+        @$sent_log_table_name = $parts[1];
 
-        $parts   = explode('.', $this->templates_table);
-        @$templates_table_name  = $parts[1];
+        $parts = explode('.', $this->templates_table);
+        @$templates_table_name = $parts[1];
 
         $script = ' CREATE TABLE ' . $this->jobs_table . '
         (
@@ -155,7 +155,7 @@ class Storage implements StorageInterface
         ALTER TABLE ' . $this->sent_log_table . ' ADD (
         CONSTRAINT ' . substr($sent_log_table_name, 0, 27) . '_FK 
         FOREIGN KEY (JOB_ID) 
-        REFERENCES ' .  $this->jobs_table . ' (JOB_ID)
+        REFERENCES ' . $this->jobs_table . ' (JOB_ID)
         ON DELETE CASCADE
         ENABLE VALIDATE);  
 
@@ -178,10 +178,10 @@ class Storage implements StorageInterface
         PRIMARY KEY (TEMPLATE_CODE) USING INDEX ' . substr($this->templates_table, 0, 27) . '_PK
         ENABLE VALIDATE); ';
 
-        $script .= " 
+        $script .= ' 
           -- Insert default email templates for notifications 
 
-          INSERT  INTO " . $this->templates_table . "(TEMPLATE_CODE, TEMPLATE_DESCRIPTION, SMTP_JSON, \"FROM\", \"SUBJECT\", \"BODY\", REPLY_TO, CC, BCC)
+          INSERT  INTO ' . $this->templates_table . "(TEMPLATE_CODE, TEMPLATE_DESCRIPTION, SMTP_JSON, \"FROM\", \"SUBJECT\", \"BODY\", REPLY_TO, CC, BCC)
             VALUES ('job_started_template','When background job started','smtp-json','from@test.com','Background Mail Job Started','<p>Dear Concern,</p>\r\n\r\n<p>Your background mail job has been Started. Click on the link below to see updated sent log:</p>\r\n\r\n<p> >> <a href=\"___JOB_DETAILS_URL___\">Click Here To View Job Details</a></p>\r\n\r\n<p>Job summary is given below:</p>\r\n\r\n<table>\r\n	<tr>\r\n		<td>Job ID</td>\r\n		<td>___JOB_ID___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Status</td>\r\n		<td>___JOB_STATUS___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Total Count</td>\r\n		<td>___JOB_TOTAL_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Executed Count</td>\r\n		<td>___JOB_EXECUTED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Sent Count</td>\r\n		<td>___JOB_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Not Sent Count</td>\r\n		<td>___JOB_NOT_SENT_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Percent Completed</td>\r\n		<td>___JOB_PERCENT_COMPLETED___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Time Spent</td>\r\n		<td>___JOB_TIME_SPENT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Started At</td>\r\n		<td>___JOB_STARTED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Ended At</td>\r\n		<td>___JOB_ENDED_AT___</td>\r\n	</tr>\r\n</table>\r\n\r\n<p>*** This is an automatically generated email, please do not reply ***</p>\r\n\r\n<p>Thanks!</p>','reply-to','cc','bcc'); 
            
           INSERT  INTO " . $this->templates_table . "(TEMPLATE_CODE, TEMPLATE_DESCRIPTION, SMTP_JSON, \"FROM\", \"SUBJECT\", \"BODY\", REPLY_TO, CC, BCC) 
@@ -216,6 +216,7 @@ class Storage implements StorageInterface
         if (empty($tables)) {
             $query = $this->getDBStructure();
             $this->DB->importSQL($query);
+
             return true;
         }
 
@@ -242,8 +243,9 @@ class Storage implements StorageInterface
             ':TEMPLATES_TABLE' => str_replace('"', '', strtoupper($this->templates_table)),
         ];
         $tables = $this->DB->fetchColumn($query, $values);
-        if (count($tables) != 3)
+        if (count($tables) != 3) {
             throw new \Exception('Database tables not found or missing some tables');
+        }
     }
 
     /**
@@ -267,9 +269,9 @@ class Storage implements StorageInterface
                         JOB_CANCELED_COUNT,
                         JOB_PERCENT_COMPLETED,
                         JOB_TIME_SPENT,
-                        ' . $exp->getDate("JOB_STARTED_AT") . ' JOB_STARTED_AT,
-                        ' . $exp->getDate("JOB_ENDED_AT") . ' JOB_ENDED_AT,
-                        ' . $exp->getDate("JOB_CANCELED_AT") . ' JOB_CANCELED_AT,
+                        ' . $exp->getDate('JOB_STARTED_AT') . ' JOB_STARTED_AT,
+                        ' . $exp->getDate('JOB_ENDED_AT') . ' JOB_ENDED_AT,
+                        ' . $exp->getDate('JOB_CANCELED_AT') . ' JOB_CANCELED_AT,
                         JOB_NOTIFY_TO,
                         JOB_RETRY_NUMBER,
                         MAIL_BACKGROUND_WORKER
@@ -279,29 +281,39 @@ class Storage implements StorageInterface
             ':JOB_ID' => $job_id
         ];
         $row = $this->DB->fetchRow($query, $values);
+
         return $row;
     }
 
     /**
-     * Get not sent data for given job id and retry number
+     * Save not sent data for given job id and retry number in given CSV file path
      *
+     * @param string $csv_path
      * @param string $job_id
      * @param string $retry_number
      * @param array $retry_exception_codes if given only consider list of exception codes for retry
-     * @return array
+     * @return bool true if any record found and saved to CSV file otherwise false
      */
-    public function getNotSentDataForJobIdAndRetryNumber($job_id, $retry_number, array $retry_exception_codes)
-    {
+    public function saveNotSentDataForJobIdAndRetryNumberInCSV(
+        $csv_path,
+        $job_id,
+        $retry_number,
+        array $retry_exception_codes
+    ) {
+        ini_set('max_execution_time', '0');
+
         $job_id = strtolower($job_id);
         $exp = $this->DB->getExpression();
-        $WHERE  = '';
+        $WHERE = '';
         $values = [];
 
         $WHERE .= ' AND ' . $exp->getUuid('JOB_ID') . ' = :JOB_ID 
-                    AND RETRY_NUMBER = :RETRY_NUMBER ';
+                    AND RETRY_NUMBER = :RETRY_NUMBER
+                    AND SENT_STATUS  = :SENT_STATUS ';
         $values = array_merge($values, [
             ':JOB_ID' => $job_id,
-            ':RETRY_NUMBER' => (int) $retry_number
+            ':RETRY_NUMBER' => (int) $retry_number,
+            ':SENT_STATUS' => 'Not Sent'
         ]);
 
         $IN = $exp->in($retry_exception_codes);
@@ -310,46 +322,76 @@ class Storage implements StorageInterface
             $values = array_merge($values, $IN->getValues());
         }
 
-        $query = ' SELECT ' . $exp->getUuid('JOB_ID') . ' JOB_ID,
-                            RETRY_NUMBER,
-                            SMTP_JSON,
-                            "FROM",
-                            SENDER,
-                            RETURN_PATH,
-                            "SUBJECT",
-                            "BODY",
-                            "TO",
-                            REPLY_TO,
-                            CC,
-                            BCC,
-                            ATTACHMENT_1_JSON,
-                            ATTACHMENT_2_JSON,
-                            ATTACHMENT_3_JSON,
-                            ATTACHMENT_4_JSON,
-                            ATTACHMENT_5_JSON,
-                            ATTACHMENT_6_JSON,
-                            ' . $exp->getDate('SENT_AT') . ' SENT_AT,
-                            SENT_STATUS,
-                            EXCEPTION_CODE,
-                            EXCEPTION_MESSAGE,
-                            EXCEPTION_JSON
+        $query = ' SELECT COUNT(JOB_ID) "TOTAL"
+                    FROM    ' . $this->sent_log_table . '
+                   WHERE   1 = 1 ' . $WHERE;
+        $total_records = $this->DB->fetchKey('total', $query, $values);
+
+        if ($total_records > 0) {
+            $query = ' SELECT   SMTP_JSON "___SMTP_JSON___",
+                            "FROM" "___FROM___",
+                            SENDER "___SENDER___",
+                            RETURN_PATH "___RETURN_PATH___",
+                            "SUBJECT" "___SUBJECT___",
+                            "BODY" "___BODY___",
+                            "TO" "___TO___",
+                            REPLY_TO "___REPLY_TO___",
+                            CC "___CC___",
+                            BCC "___BCC___",
+                            ATTACHMENT_1_JSON "___ATTACHMENT_1_JSON___",
+                            ATTACHMENT_2_JSON "___ATTACHMENT_2_JSON___",
+                            ATTACHMENT_3_JSON "___ATTACHMENT_3_JSON___",
+                            ATTACHMENT_4_JSON "___ATTACHMENT_4_JSON___",
+                            ATTACHMENT_5_JSON "___ATTACHMENT_5_JSON___",
+                            ATTACHMENT_6_JSON "___ATTACHMENT_6_JSON___"
                 FROM    ' . $this->sent_log_table . '
                 WHERE   1 = 1 ' . $WHERE;
+            $query .= ' ORDER BY SENT_AT ASC ';
 
-        $query .= " ORDER BY SENT_AT ASC ";
-        $data = $this->DB->fetchRows($query, $values);
+            $fp = fopen($csv_path, 'w+');
+            $header = [
+                '___SMTP_JSON___',
+                '___FROM___',
+                '___SENDER___',
+                '___RETURN_PATH___',
+                '___SUBJECT___',
+                '___BODY___',
+                '___TO___',
+                '___REPLY_TO___',
+                '___CC___',
+                '___BCC___',
+                '___ATTACHMENT_1_JSON___',
+                '___ATTACHMENT_2_JSON___',
+                '___ATTACHMENT_3_JSON___',
+                '___ATTACHMENT_4_JSON___',
+                '___ATTACHMENT_5_JSON___',
+                '___ATTACHMENT_6_JSON___'
+            ];
+            fputcsv($fp, $header);
 
-        if (!empty($data)) {
-            foreach ($data as $k => $row) {
-                if (is_object($row['body']))
-                    $data[$k]['body'] = $row['body']->load();
+            $records_per_page = 1000;
+            $total_page_numbers = ceil($total_records / $records_per_page);
+            for ($page_number = 1; $page_number <= $total_page_numbers; $page_number++) {
+                $chunk = $this->DB->fetchChunk(
+                    $query,
+                    $values,
+                    $page_number,
+                    $records_per_page
+                );
 
-                if (is_object($row['exception_json']))
-                    $data[$k]['exception_json'] = $row['exception_json']->load();
+                foreach ($chunk as $row) {
+                    unset($row['meta_rownum']);
+                    $row['___body___'] = (is_object($row['___body___'])) ? $row['___body___']->load() : $row['___body___'];
+
+                    fputcsv($fp, $row);
+                }
             }
+            fclose($fp);
+
+            return true;
         }
 
-        return ['data' => $data];
+        return false;
     }
 
     /**
@@ -376,8 +418,9 @@ class Storage implements StorageInterface
         $row = $this->DB->fetchRow($query, $values);
 
         if (!empty($row)) {
-            if (is_object($row['body']))
+            if (is_object($row['body'])) {
                 $row['body'] = $row['body']->load();
+            }
         }
 
         return $row;
@@ -417,18 +460,18 @@ class Storage implements StorageInterface
         $exp = $this->DB->getExpression();
 
         $data = [];
-        $data['JOB_ID']                  = $exp->setUuid($job_id);
-        $data['JOB_STATUS']              = substr(trim($job_status), 0, 20);
-        $data['JOB_TOTAL_COUNT']         = (int) trim($job_total_count);
-        $data['JOB_EXECUTED_COUNT']      = (int) trim($job_executed_count);
-        $data['JOB_SENT_COUNT']          = (int) trim($job_sent_count);
-        $data['JOB_NOT_SENT_COUNT']      = (int) trim($job_not_sent_count);
-        $data['JOB_CANCELED_COUNT']      = (int) trim($job_canceled_count);
-        $data['JOB_PERCENT_COMPLETED']   = substr(trim($job_percent_completed), 0, 5);
-        $data['JOB_TIME_SPENT']          = substr(trim($job_time_spent), 0, 100);
-        $data['JOB_STARTED_AT']          = $exp->setDate($job_started_at);
-        $data['JOB_NOTIFY_TO']           = substr(trim($job_notify_to), 0, 4000);
-        $data['MAIL_BACKGROUND_WORKER']  = substr(trim($mail_background_worker), 0, 100);
+        $data['JOB_ID'] = $exp->setUuid($job_id);
+        $data['JOB_STATUS'] = substr(trim($job_status), 0, 20);
+        $data['JOB_TOTAL_COUNT'] = (int) trim($job_total_count);
+        $data['JOB_EXECUTED_COUNT'] = (int) trim($job_executed_count);
+        $data['JOB_SENT_COUNT'] = (int) trim($job_sent_count);
+        $data['JOB_NOT_SENT_COUNT'] = (int) trim($job_not_sent_count);
+        $data['JOB_CANCELED_COUNT'] = (int) trim($job_canceled_count);
+        $data['JOB_PERCENT_COMPLETED'] = substr(trim($job_percent_completed), 0, 5);
+        $data['JOB_TIME_SPENT'] = substr(trim($job_time_spent), 0, 100);
+        $data['JOB_STARTED_AT'] = $exp->setDate($job_started_at);
+        $data['JOB_NOTIFY_TO'] = substr(trim($job_notify_to), 0, 4000);
+        $data['MAIL_BACKGROUND_WORKER'] = substr(trim($mail_background_worker), 0, 100);
 
         $this->DB->insert($this->jobs_table, $data);
     }
@@ -489,29 +532,29 @@ class Storage implements StorageInterface
         $exp = $this->DB->getExpression();
 
         $data = [];
-        $data['JOB_ID']             = $exp->setUuid($job_id);
-        $data['RETRY_NUMBER']       = (int) trim($retry_number);
-        $data['SMTP_JSON']          = substr(trim($smtp_json), 0, 4000);
-        $data['FROM']               = substr(trim($from), 0, 4000);
-        $data['SENDER']             = substr(trim($sender), 0, 4000);
-        $data['RETURN_PATH']        = substr(trim($return_path), 0, 4000);
-        $data['SUBJECT']            = substr(trim($subject), 0, 4000);
-        $data['BODY']               = $body;
-        $data['TO']                 = substr(trim($to), 0, 4000);
-        $data['REPLY_TO']           = substr(trim($reply_to), 0, 4000);
-        $data['CC']                 = substr(trim($cc), 0, 4000);
-        $data['BCC']                = substr(trim($bcc), 0, 4000);
-        $data['ATTACHMENT_1_JSON']  = substr(trim($attachment_1_json), 0, 4000);
-        $data['ATTACHMENT_2_JSON']  = substr(trim($attachment_2_json), 0, 4000);
-        $data['ATTACHMENT_3_JSON']  = substr(trim($attachment_3_json), 0, 4000);
-        $data['ATTACHMENT_4_JSON']  = substr(trim($attachment_4_json), 0, 4000);
-        $data['ATTACHMENT_5_JSON']  = substr(trim($attachment_5_json), 0, 4000);
-        $data['ATTACHMENT_6_JSON']  = substr(trim($attachment_6_json), 0, 4000);
-        $data['SENT_AT']            = $exp->setDate($sent_at);
-        $data['SENT_STATUS']        = substr(trim($sent_status), 0, 10);
-        $data['EXCEPTION_CODE']     = substr(trim($exception_code), 0, 10);
-        $data['EXCEPTION_MESSAGE']  = substr(trim($exception_message), 0, 4000);
-        $data['EXCEPTION_JSON']     = $exception_json;
+        $data['JOB_ID'] = $exp->setUuid($job_id);
+        $data['RETRY_NUMBER'] = (int) trim($retry_number);
+        $data['SMTP_JSON'] = substr(trim($smtp_json), 0, 4000);
+        $data['FROM'] = substr(trim($from), 0, 4000);
+        $data['SENDER'] = substr(trim($sender), 0, 4000);
+        $data['RETURN_PATH'] = substr(trim($return_path), 0, 4000);
+        $data['SUBJECT'] = substr(trim($subject), 0, 4000);
+        $data['BODY'] = $body;
+        $data['TO'] = substr(trim($to), 0, 4000);
+        $data['REPLY_TO'] = substr(trim($reply_to), 0, 4000);
+        $data['CC'] = substr(trim($cc), 0, 4000);
+        $data['BCC'] = substr(trim($bcc), 0, 4000);
+        $data['ATTACHMENT_1_JSON'] = substr(trim($attachment_1_json), 0, 4000);
+        $data['ATTACHMENT_2_JSON'] = substr(trim($attachment_2_json), 0, 4000);
+        $data['ATTACHMENT_3_JSON'] = substr(trim($attachment_3_json), 0, 4000);
+        $data['ATTACHMENT_4_JSON'] = substr(trim($attachment_4_json), 0, 4000);
+        $data['ATTACHMENT_5_JSON'] = substr(trim($attachment_5_json), 0, 4000);
+        $data['ATTACHMENT_6_JSON'] = substr(trim($attachment_6_json), 0, 4000);
+        $data['SENT_AT'] = $exp->setDate($sent_at);
+        $data['SENT_STATUS'] = substr(trim($sent_status), 0, 10);
+        $data['EXCEPTION_CODE'] = substr(trim($exception_code), 0, 10);
+        $data['EXCEPTION_MESSAGE'] = substr(trim($exception_message), 0, 4000);
+        $data['EXCEPTION_JSON'] = $exception_json;
 
         $this->DB->insert($this->sent_log_table, $data);
     }
@@ -529,7 +572,7 @@ class Storage implements StorageInterface
     {
         $exp = $this->DB->getExpression();
 
-        $query = " UPDATE " . $this->jobs_table . " SET 
+        $query = ' UPDATE ' . $this->jobs_table . " SET 
                             JOB_EXECUTED_COUNT = CASE 
                             WHEN JOB_TOTAL_COUNT > JOB_EXECUTED_COUNT 
                                 THEN (JOB_EXECUTED_COUNT + 1) 
@@ -584,11 +627,11 @@ class Storage implements StorageInterface
                                             END
                                     ),
                     JOB_RETRY_NUMBER = :RETRY_NUMBER
-                    WHERE " . $exp->getUuid("JOB_ID") . " = :JOB_ID ";
+                    WHERE " . $exp->getUuid('JOB_ID') . ' = :JOB_ID ';
         $values = [
             ':JOB_ID' => $job_id,
             ':RETRY_NUMBER' => $retry_number,
-            ':SENT_STATUS'  => $sent_status,
+            ':SENT_STATUS' => $sent_status,
             ':CURRENT_TIME' => $sent_at,
         ];
 
@@ -608,12 +651,12 @@ class Storage implements StorageInterface
         $exp = $this->DB->getExpression();
 
         $date = $exp->setDate(date('Y-m-d H:i:s'));
-        $query = " UPDATE " . $this->jobs_table . " SET
+        $query = ' UPDATE ' . $this->jobs_table . ' SET
                     JOB_STATUS = :JOB_STATUS,
                     JOB_CANCELED_COUNT = :JOB_CANCELED_COUNT,
-                    JOB_CANCELED_AT  = " . $date->getFragment() .
-            " WHERE 
-                       " . $exp->getUuid("JOB_ID") . " = :JOB_ID ";
+                    JOB_CANCELED_AT  = ' . $date->getFragment() .
+            ' WHERE 
+                       ' . $exp->getUuid('JOB_ID') . ' = :JOB_ID ';
         $values = [
             ':JOB_STATUS' => 'Canceled',
             ':JOB_CANCELED_COUNT' => $job_canceled_count,
@@ -635,13 +678,14 @@ class Storage implements StorageInterface
     {
         // Validate $upto datetime format: Y-m-d H:i:s
         $date = \DateTime::createFromFormat('Y-m-d H:i:s', $upto);
-        if (($date && $date->format('Y-m-d H:i:s') == $upto) == false)
+        if (($date && $date->format('Y-m-d H:i:s') == $upto) == false) {
             throw new \Exception('Invalid datetime format it must be: `Y-m-d H:i:s`');
+        }
 
         $exp = $this->DB->getExpression();
 
-        $query = " DELETE FROM " . $this->jobs_table . "
-                    WHERE   " . $exp->getDate("JOB_STARTED_AT") . " <= :JOB_STARTED_AT ";
+        $query = ' DELETE FROM ' . $this->jobs_table . '
+                    WHERE   ' . $exp->getDate('JOB_STARTED_AT') . ' <= :JOB_STARTED_AT ';
         $values = [
             ':JOB_STARTED_AT' => $upto
         ];

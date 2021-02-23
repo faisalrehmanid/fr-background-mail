@@ -22,14 +22,20 @@ interface StorageInterface
     public function getJobById($job_id);
 
     /**
-     * Get not sent data for given job id and retry number
+     * Save not sent data for given job id and retry number in given CSV file path
      *
+     * @param string $csv_path
      * @param string $job_id
      * @param string $retry_number
      * @param array $retry_exception_codes if given only consider list of exception codes for retry
-     * @return array
+     * @return bool true if any record found and saved to CSV file otherwise false
      */
-    public function getNotSentDataForJobIdAndRetryNumber($job_id, $retry_number, array $retry_exception_codes);
+    public function saveNotSentDataForJobIdAndRetryNumberInCSV(
+        $csv_path,
+        $job_id,
+        $retry_number,
+        array $retry_exception_codes
+    );
 
     /**
      * Get template details by code
