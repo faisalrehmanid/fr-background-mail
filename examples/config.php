@@ -1,8 +1,10 @@
 <?php
+
 require __DIR__ . '/../vendor/autoload.php';
 
 $config = [
     'logs_path' => '/var/www/virtual/test/httpdocs/public/faisalrehmanid-fr-background-mail/error-logs-gearman',
+    'recipients_path' => '/var/www/virtual/test/httpdocs/public/faisalrehmanid-fr-background-mail/examples/mail-recipients-csv',
     'autoload_path' => '/var/www/virtual/test/httpdocs/public/faisalrehmanid-fr-background-mail/vendor/autoload.php',
     'execute_path' => '/var/www/virtual/test/httpdocs/public/faisalrehmanid-fr-background-mail/src/Execute.php',
     'job_details_url' => 'https:/testurl.com/job-details/{job_id}', // Optional
@@ -36,8 +38,8 @@ $config = [
             'character_set' => 'AL32UTF8',
         ],
         */
-        'jobs_table'      => 'test_fr_db_mysql.background_mail_jobs',
-        'sent_log_table'  => 'test_fr_db_mysql.background_mail_job_sent_log',
+        'jobs_table' => 'test_fr_db_mysql.background_mail_jobs',
+        'sent_log_table' => 'test_fr_db_mysql.background_mail_job_sent_log',
         'templates_table' => 'test_fr_db_mysql.background_mail_job_templates'
     ],
     'oracle_home' => '/home/oracle/app/oracle/product/19.0.0/client_1', // Only for oracle
@@ -50,8 +52,11 @@ $config = [
         'gearadmin' => '/bin/gearadmin'
     ],
 
-    // List of response codes need to retry when email 'Not Sent'. If empty array is given 
-    // it will retry to send all 'Not Sent' emails but if codes are specified it will only 
+    // Remove stuck workers from memory which are older than given days
+    'remove_stucked_workers_after_days' => 5,
+
+    // List of response codes need to retry when email 'Not Sent'. If empty array is given
+    // it will retry to send all 'Not Sent' emails but if codes are specified it will only
     // consider to retry those `Not Sent` emails having that response code.
     'retry_exception_codes' => [
         432
