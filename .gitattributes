@@ -1,0 +1,8 @@
+# https://git-scm.com/docs/gitattributes
+# gitattributes - Defining attributes per path
+
+# Files and directories with the attribute export-ignore won’t be added to archive or release files
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/TODO.md export-ignore
+/tests/ export-ignore

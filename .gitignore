@@ -1,0 +1,5 @@
+# https://git-scm.com/docs/gitignore
+# gitignore - Specifies intentionally untracked files to ignore
+
+/composer.lock
+/vendor/
