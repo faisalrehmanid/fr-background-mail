@@ -18,16 +18,7 @@
       "FR\\BackgroundMail\\": "src/"
     }
   },
-  "autoload-dev": {
-    "files": [
-      "tests/Bootstrap.php"
-    ],
-    "psr-4": {
-      "FRUnitTest\\BackgroundMail\\": "tests/src/unit"
-    }
-  },
   "require": {
-	"php": ">=5.4.0",
     "faisalrehmanid/fr-db": ">=1.0",
     "symfony/mailer": "^8.0"
   }
