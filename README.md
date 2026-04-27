@@ -1,6 +1,6 @@
 ### Requirements
 
-PHP ^7.0
+PHP ^8.4
 PHP Gearman Extension [Reference](https://www.php.net/manual/en/book.gearman.php)
 
 ### Features
@@ -19,9 +19,3 @@ PHP Gearman Extension [Reference](https://www.php.net/manual/en/book.gearman.php
 ### How to use
 
 Check out the `examples` folder given in package.
-
-### How to test
-
-1. Point to /vendor/bin dir `cd ./vendor/bin`
-2. Execute PHPUnit tests: `phpunit --configuration ./../../tests/phpunit.xml`
-3. To check phpunit version: `phpunit --version`
