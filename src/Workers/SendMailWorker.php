@@ -4,6 +4,12 @@ namespace FR\BackgroundMail\Workers;
 
 use FR\BackgroundMail\Storage\StorageInterface;
 use FR\BackgroundMail\Helper\Util;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport\SendmailTransport;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Part\DataPart;
 
 class SendMailWorker
 {
@@ -65,49 +71,81 @@ class SendMailWorker
     }
 
     /**
-     * Simple file attachment
+     * Convert mixed email input into Symfony Address objects.
      *
-     * @param string $path Complete path or URL of the file
-     * @param string $name Name of the file when user receive email in inbox
-     * @return object Swift_Attachment
+     * @param string|array $emails
+     * @return Address[]
      */
-    private function simpleAttachment($path, $name)
+    private function toAddressList($emails)
     {
-        $Swift_Attachment = \Swift_Attachment::fromPath($path);
-        if ($name) {
-            $Swift_Attachment->setFilename($name);
+        $addresses = [];
+
+        if (empty($emails)) {
+            return $addresses;
         }
 
-        return $Swift_Attachment;
+        if (is_string($emails)) {
+            $addresses[] = new Address($emails);
+            return $addresses;
+        }
+
+        foreach ((array) $emails as $email => $name) {
+            if (is_int($email)) {
+                $addresses[] = new Address($name);
+            } else {
+                $addresses[] = new Address($email, (string) $name);
+            }
+        }
+
+        return $addresses;
     }
 
     /**
-      * Inline file attachment will be parse by email client
-      *
-      * @param string $path Complete path or URL of the file
-      * @param string $name Name of the file when user receive email in inbox
-      * @param string $content_type File content type
-      * @return object Swift_Attachment
-      */
+     * Read attachment from local path or URL.
+     *
+     * @param string $path Complete path or URL of the file
+     * @return string
+     */
+    private function readAttachmentContents($path)
+    {
+        $contents = @file_get_contents($path);
+        if ($contents === false) {
+            throw new \Exception('Unable to read attachment file: ' . $path, 500);
+        }
+
+        return $contents;
+    }
+
+    /**
+     * Simple file attachment.
+     *
+     * @param string $path Complete path or URL of the file
+     * @param string $name Name of the file when user receive email in inbox
+     * @return DataPart
+     */
+    private function simpleAttachment($path, $name)
+    {
+        $contents = $this->readAttachmentContents($path);
+
+        return new DataPart($contents, $name);
+    }
+
+    /**
+     * Inline file attachment will be parse by email client
+     *
+     * @param string $path Complete path or URL of the file
+     * @param string $name Name of the file when user receive email in inbox
+     * @param string $content_type File content type
+     * @return DataPart
+     */
     private function inlineAttachment($path, $name, $content_type)
     {
-        $contents = \file_get_contents($path);
-        $Swift_Attachment = (new \Swift_Attachment())
-                        ->setFilename($name)
-                        ->setContentType($content_type)
-                        ->setBody(trim($contents));
+        $contents = trim($this->readAttachmentContents($path));
 
-        $Headers = $Swift_Attachment->getHeaders();
-        $HeaderContentType = $Headers->get('Content-Type');
-        $HeaderContentType->setValue($content_type);
-        $HeaderContentType->setParameters([
-            'charset' => 'UTF-8',
-            'method' => 'REQUEST',
-            'name' => $name
-        ]);
-        $Headers->remove('Content-Disposition');
+        $attachment = new DataPart($contents, $name, $content_type);
+        $attachment->asInline();
 
-        return $Swift_Attachment;
+        return $attachment;
     }
 
     /**
@@ -156,76 +194,88 @@ class SendMailWorker
 
         try {
             if (empty($smtp)) {
-                $SwiftTransport = new \Swift_SendmailTransport();
+                $transport = new SendmailTransport();
             }
 
             if (!empty($smtp)) {
-                $SwiftTransport = new \Swift_SmtpTransport();
+                $transport = new EsmtpTransport();
 
                 if (@$smtp['host']) {
-                    $SwiftTransport->setHost($smtp['host']);
+                    $transport->setHost($smtp['host']);
                 }
                 if (@$smtp['port']) {
-                    $SwiftTransport->setPort($smtp['port']);
+                    $transport->setPort($smtp['port']);
                 }
                 if (@$smtp['encryption']) {
-                    $SwiftTransport->setEncryption($smtp['encryption']);
+                    $transport->setEncryption($smtp['encryption']);
                 }
                 if (@$smtp['username']) {
-                    $SwiftTransport->setUsername($smtp['username']);
+                    $transport->setUsername($smtp['username']);
                 }
                 if (@$smtp['password']) {
-                    $SwiftTransport->setPassword($smtp['password']);
+                    $transport->setPassword($smtp['password']);
                 }
             }
 
-            $SwiftMailer = new \Swift_Mailer($SwiftTransport);
-            $SwiftMessage = new \Swift_Message();
-            $SwiftMessage->setContentType('multipart/alternative');
+            $mailer = new Mailer($transport);
+            $message = new Email();
 
             if (!empty($from)) {
-                $SwiftMessage->setFrom($from);
+                foreach ($this->toAddressList($from) as $address) {
+                    $message->addFrom($address);
+                }
             } else {
                 throw new \Exception('From email could not be empty', 500);
             }
 
             if (!empty($sender)) {
-                $SwiftMessage->setSender($sender);
+                $sender_list = $this->toAddressList($sender);
+                if (!empty($sender_list)) {
+                    $message->sender($sender_list[0]);
+                }
             }
 
             if (!empty($return_path)) {
-                $SwiftMessage->setReturnPath($return_path);
+                $message->returnPath($return_path);
             }
 
             if (!empty($subject)) {
-                $SwiftMessage->setSubject($subject);
+                $message->subject($subject);
             } else {
                 throw new \Exception('Subject could not be empty', 500);
             }
 
             if (!empty($body)) {
-                $SwiftMessage->setBody($body, 'text/html');
-                $SwiftMessage->addPart(strip_tags($body), 'text/plain');
+                $message->html($body);
+                $message->text(strip_tags($body));
             } else {
                 throw new \Exception('Body could not be empty', 500);
             }
 
             if (!empty($to)) {
-                $SwiftMessage->setTo($to);
+                foreach ($this->toAddressList($to) as $address) {
+                    $message->addTo($address);
+                }
             } else {
                 throw new \Exception('To email could not be empty', 500);
             }
 
             if (!empty($reply_to)) {
-                $SwiftMessage->setReplyTo($reply_to);
+                foreach ($this->toAddressList($reply_to) as $address) {
+                    $message->addReplyTo($address);
+                }
             }
 
             if (!empty($cc)) {
-                $SwiftMessage->setCc($cc);
+                foreach ($this->toAddressList($cc) as $address) {
+                    $message->addCc($address);
+                }
             }
 
             if (!empty($bcc)) {
-                $SwiftMessage->setBcc($bcc);
+                foreach ($this->toAddressList($bcc) as $address) {
+                    $message->addBcc($address);
+                }
             }
 
             for ($i = 1; $i <= 6; $i++) {
@@ -266,16 +316,17 @@ class SendMailWorker
                     }
 
                     if ($type == 'inline') {
-                        $Swift_Attachment = $this->inlineAttachment($path, $name, $content_type);
+                        $attachment_part = $this->inlineAttachment($path, $name, $content_type);
                     } else {
-                        $Swift_Attachment = $this->simpleAttachment($path, $name);
+                        $attachment_part = $this->simpleAttachment($path, $name);
                     }
 
-                    @$SwiftMessage->attach($Swift_Attachment);
+                    @$message->addPart($attachment_part);
                 }
             }
 
-            $sent = $SwiftMailer->send($SwiftMessage);
+            $mailer->send($message);
+            $sent = true;
 
             if ($sent) {
                 $sent_status = 'Sent';
