@@ -110,7 +110,7 @@ class Storage implements StorageInterface
             `mail_background_worker` varchar(100) NOT NULL,
             PRIMARY KEY (`job_id`)
           );
-          
+
           CREATE TABLE " . $this->sent_log_table . " (
             `job_id` binary(32) NOT NULL,
             `retry_number` int(11) unsigned NOT NULL,
@@ -138,7 +138,7 @@ class Storage implements StorageInterface
             KEY `fk_job_id_" . $fk_id . '` (`job_id`),
             CONSTRAINT `fk_job_id_' . $fk_id . '` FOREIGN KEY (`job_id`) REFERENCES ' . $this->jobs_table . ' (`job_id`) ON DELETE CASCADE
           );
-          
+
           CREATE TABLE ' . $this->templates_table . ' (
             `template_code` varchar(50) NOT NULL,
             `template_description` varchar(100) NOT NULL,
@@ -150,12 +150,12 @@ class Storage implements StorageInterface
             `cc` varchar(1000) DEFAULT NULL,
             `bcc` varchar(1000) DEFAULT NULL,
             PRIMARY KEY (`template_code`)
-          ); 
-          
+          );
+
           /* Insert default email templates for notifications */
-          INSERT  INTO ' . $this->templates_table . " (`template_code`,`template_description`,`smtp_json`,`from`,`subject`,`body`,`reply_to`,`cc`,`bcc`) 
+          INSERT  INTO ' . $this->templates_table . " (`template_code`,`template_description`,`smtp_json`,`from`,`subject`,`body`,`reply_to`,`cc`,`bcc`)
                 VALUES ('job_started_template','When background job started','smtp-json','from@test.com','Background Mail Job Started','<p>Dear Concern,</p>\r\n\r\n<p>Your background mail job has been Started. Click on the link below to see updated sent log:</p>\r\n\r\n<p> >> <a href=\"___JOB_DETAILS_URL___\">Click Here To View Job Details</a></p>\r\n\r\n<p>Job summary is given below:</p>\r\n\r\n<table>\r\n	<tr>\r\n		<td>Job ID</td>\r\n		<td>___JOB_ID___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Status</td>\r\n		<td>___JOB_STATUS___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Total Count</td>\r\n		<td>___JOB_TOTAL_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Executed Count</td>\r\n		<td>___JOB_EXECUTED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Sent Count</td>\r\n		<td>___JOB_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Not Sent Count</td>\r\n		<td>___JOB_NOT_SENT_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Percent Completed</td>\r\n		<td>___JOB_PERCENT_COMPLETED___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Time Spent</td>\r\n		<td>___JOB_TIME_SPENT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Started At</td>\r\n		<td>___JOB_STARTED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Ended At</td>\r\n		<td>___JOB_ENDED_AT___</td>\r\n	</tr>\r\n</table>\r\n\r\n<p>*** This is an automatically generated email, please do not reply ***</p>\r\n\r\n<p>Thanks!</p>','reply-to','cc','bcc'),
-                       
+
                        ('job_completed_template','When background job completed','smtp-json','from@test.com','Background Mail Job Completed','<p>Dear Concern,</p>\r\n\r\n<p>Your background mail job has been Completed. Click on the link below to see updated sent log:</p>\r\n\r\n<p> >> <a href=\"___JOB_DETAILS_URL___\">Click Here To View Job Details</a></p>\r\n\r\n<p>Job summary is given below:</p>\r\n\r\n<table>\r\n	<tr>\r\n		<td>Job ID</td>\r\n		<td>___JOB_ID___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Status</td>\r\n		<td>___JOB_STATUS___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Total Count</td>\r\n		<td>___JOB_TOTAL_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Executed Count</td>\r\n		<td>___JOB_EXECUTED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Sent Count</td>\r\n		<td>___JOB_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Not Sent Count</td>\r\n		<td>___JOB_NOT_SENT_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Percent Completed</td>\r\n		<td>___JOB_PERCENT_COMPLETED___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Time Spent</td>\r\n		<td>___JOB_TIME_SPENT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Started At</td>\r\n		<td>___JOB_STARTED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Ended At</td>\r\n		<td>___JOB_ENDED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Number of Retry</td>\r\n		<td>___JOB_RETRY_NUMBER___</td>\r\n	</tr>\r\n</table>\r\n\r\n<p>*** This is an automatically generated email, please do not reply ***</p>\r\n\r\n<p>Thanks!</p>','reply-to','cc','bcc'),
 
                        ('job_canceled_template','When background job canceled','smtp-json','from@test.com','Background Mail Job Canceled','<p>Dear Concern,</p>\r\n\r\n<p>Your background mail job has been Canceled. Click on the link below to see updated sent log:</p>\r\n\r\n<p> >> <a href=\"___JOB_DETAILS_URL___\">Click Here To View Job Details</a></p>\r\n\r\n<p>Job summary is given below:</p>\r\n\r\n<table>\r\n	<tr>\r\n		<td>Job ID</td>\r\n		<td>___JOB_ID___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Status</td>\r\n		<td>___JOB_STATUS___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Total Count</td>\r\n		<td>___JOB_TOTAL_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Executed Count</td>\r\n		<td>___JOB_EXECUTED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Sent Count</td>\r\n		<td>___JOB_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Not Sent Count</td>\r\n		<td>___JOB_NOT_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Canceled Count</td>\r\n		<td>___JOB_CANCELED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Percent Completed</td>\r\n		<td>___JOB_PERCENT_COMPLETED___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Time Spent</td>\r\n		<td>___JOB_TIME_SPENT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Started At</td>\r\n		<td>___JOB_STARTED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Canceled At</td>\r\n		<td>___JOB_CANCELED_AT___</td>\r\n	</tr>\r\n</table>\r\n\r\n<p>*** This is an automatically generated email, please do not reply ***</p>\r\n\r\n<p>Thanks!</p>','reply-to','cc','bcc');
@@ -171,10 +171,10 @@ class Storage implements StorageInterface
      */
     public function createDBStructure()
     {
-        $query = ' SELECT table_schema, 
-                          table_name 
-                     FROM information_schema.tables 
-                    WHERE LOWER(CONCAT(table_schema, \'.\' ,table_name)) 
+        $query = ' SELECT table_schema,
+                          table_name
+                     FROM information_schema.tables
+                    WHERE LOWER(CONCAT(table_schema, \'.\' ,table_name))
                         IN (:jobs_table, :sent_log_table, :templates_table) ';
         $values = [
             ':jobs_table' => str_replace('`', '', strtolower($this->jobs_table)),
@@ -201,10 +201,10 @@ class Storage implements StorageInterface
      */
     public function validateStorage()
     {
-        $query = ' SELECT table_schema, 
-                          table_name 
-                     FROM information_schema.tables 
-                    WHERE LOWER(CONCAT(table_schema, \'.\' ,table_name)) 
+        $query = ' SELECT table_schema,
+                          table_name
+                     FROM information_schema.tables
+                    WHERE LOWER(CONCAT(table_schema, \'.\' ,table_name))
                         IN (:jobs_table, :sent_log_table, :templates_table) ';
         $values = [
             ':jobs_table' => str_replace('`', '', strtolower($this->jobs_table)),
@@ -228,7 +228,7 @@ class Storage implements StorageInterface
         $job_id = strtolower($job_id);
         $exp = $this->DB->getExpression();
 
-        $query = ' SELECT 
+        $query = ' SELECT
                         ' . $exp->getUuid('job_id') . ' job_id,
                         job_status,
                         job_total_count,
@@ -277,7 +277,7 @@ class Storage implements StorageInterface
         $WHERE = '';
         $values = [];
 
-        $WHERE .= ' AND ' . $exp->getUuid('job_id') . ' = :job_id 
+        $WHERE .= ' AND ' . $exp->getUuid('job_id') . ' = :job_id
                     AND retry_number = :retry_number
                     AND sent_status  = :sent_status ';
         $values = array_merge($values, [
@@ -369,7 +369,7 @@ class Storage implements StorageInterface
      */
     public function getTemplateByCode($template_code)
     {
-        $query = ' SELECT 
+        $query = ' SELECT
                         smtp_json,
                         `from`,
                         `subject`,
@@ -464,6 +464,8 @@ class Storage implements StorageInterface
      * @param string $exception_code
      * @param string $exception_message
      * @param string $exception_json
+     * @param string $graphql_json
+     * @param string $send_via
      * @return void
      */
     public function insertSentLog(
@@ -489,7 +491,9 @@ class Storage implements StorageInterface
         $sent_status,
         $exception_code,
         $exception_message,
-        $exception_json
+        $exception_json,
+        $graphql_json,
+        $send_via
     ) {
         $exp = $this->DB->getExpression();
 
@@ -517,6 +521,8 @@ class Storage implements StorageInterface
         $data['exception_code'] = substr(trim($exception_code), 0, 10);
         $data['exception_message'] = substr(trim($exception_message), 0, 1000);
         $data['exception_json'] = $exception_json;
+        $data['graphql_json'] = $graphql_json;
+        $data['send_via'] = $send_via;
 
         $this->DB->insert($this->sent_log_table, $data);
     }
@@ -534,24 +540,24 @@ class Storage implements StorageInterface
     {
         $exp = $this->DB->getExpression();
 
-        $query = ' UPDATE ' . $this->jobs_table . " SET 
-                    job_executed_count = CASE 
-                                WHEN job_total_count > job_executed_count 
-                                    THEN (job_executed_count + 1) 
-                                ELSE job_executed_count 
+        $query = ' UPDATE ' . $this->jobs_table . " SET
+                    job_executed_count = CASE
+                                WHEN job_total_count > job_executed_count
+                                    THEN (job_executed_count + 1)
+                                ELSE job_executed_count
                             END,
-					job_sent_count = CASE 
+					job_sent_count = CASE
                                 WHEN job_total_count > job_sent_count AND :sent_status = 'Sent'
-                                    THEN (job_sent_count + 1) 
-                                ELSE job_sent_count 
+                                    THEN (job_sent_count + 1)
+                                ELSE job_sent_count
                             END,
-					job_not_sent_count = CASE 
+					job_not_sent_count = CASE
                                 WHEN job_total_count > job_not_sent_count AND :sent_status = 'Not Sent'
-                                    THEN (job_not_sent_count + 1) 
-                                ELSE job_not_sent_count 
-                            END,		
-                    job_percent_completed = CASE 
-                                WHEN job_total_count >= job_executed_count 
+                                    THEN (job_not_sent_count + 1)
+                                ELSE job_not_sent_count
+                            END,
+                    job_percent_completed = CASE
+                                WHEN job_total_count >= job_executed_count
                                     THEN CONCAT(ROUND(((job_executed_count / job_total_count) * 100)),'%')
                                 ELSE job_percent_completed
                             END,
@@ -560,24 +566,24 @@ class Storage implements StorageInterface
                                 WHEN job_executed_count > 0 THEN 'Processing'
                                 ELSE 'Started'
                             END,
-                    job_ended_at = CASE 
+                    job_ended_at = CASE
                                 WHEN job_total_count = job_executed_count THEN STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')
                                 ELSE job_ended_at
                             END,
                     job_time_spent = CONCAT(
                         IF((FLOOR(TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) / 86400)) > 1, CONCAT(FLOOR(TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) / 86400),  ' Days '), ''),
                         IF((FLOOR(TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) / 86400)) = 1, CONCAT(FLOOR(TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) / 86400),  ' Day '), ''),
-                        
+
                         IF((FLOOR((TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 86400)/3600)) > 1, CONCAT(FLOOR((TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 86400)/3600),  ' Hours '), ''),
                         IF((FLOOR((TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 86400)/3600)) = 1, CONCAT(FLOOR((TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 86400)/3600),  ' Hour '), ''),
-                        
+
                         IF((FLOOR((TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 3600)/60)) > 1, CONCAT(FLOOR((TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 3600)/60),  ' Minutes '), ''),
                         IF((FLOOR((TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 3600)/60)) = 1, CONCAT(FLOOR((TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 3600)/60),  ' Minute '), ''),
-                        
+
                         IF((TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 60) > 1, CONCAT(TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 60,  ' Seconds '), ''),
                         IF((TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 60) = 1, CONCAT(TIMESTAMPDIFF(SECOND, job_started_at, STR_TO_DATE(:current_time, '%Y-%m-%d %H:%i:%s')) % 60,  ' Second '), '')
-                    ), 
-                    job_retry_number = :retry_number                   
+                    ),
+                    job_retry_number = :retry_number
                     WHERE " . $exp->getUuid('job_id') . ' = :job_id ';
         $values = [
             ':job_id' => $job_id,
@@ -606,7 +612,7 @@ class Storage implements StorageInterface
                     job_status = :job_status,
                     job_canceled_count = :job_canceled_count,
                     job_canceled_at  = ' . $date->getFragment() .
-            ' WHERE 
+            ' WHERE
                     ' . $exp->getUuid('job_id') . ' = :job_id ';
         $values = [
             ':job_status' => 'Canceled',

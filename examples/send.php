@@ -74,7 +74,7 @@ try {
     $recipients = [];
     $keys = [];
     if (($handle = fopen('./mail-recipients-csv/to.csv', 'r')) !== false) {
-        while (($row = fgetcsv($handle)) !== false) {
+        while (($row = fgetcsv($handle, 0, ',', '"', '\\')) !== false) {
             if ($index == 0) { // Read header row
                 $keys = $row;
             } elseif ($index > 0) { // Skip first header row

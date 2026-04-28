@@ -98,7 +98,7 @@ class SendMassMailBackgroundWorker
      * ]
      * @return void
      */
-    public function sendMassMailBackground($job, &$context)
+    public function sendMassMailBackground($job, $context)
     {
         $config = $context['config'];
         $Storage = $context['Storage'];
@@ -226,7 +226,7 @@ class SendMassMailBackgroundWorker
             $headers = [];
             $worker = 0;
             if (($handle = fopen($recipients_csv_file_path, 'r')) !== false) {
-                while (($row = fgetcsv($handle)) !== false) {
+                while (($row = fgetcsv($handle, 0, ',', '"', '\\')) !== false) {
                     if ($index == 0) { // Read header row
                         $headers = $row;
                     } else { // Skip first header row
@@ -235,7 +235,9 @@ class SendMassMailBackgroundWorker
                             $vars[$headers[$k]] = $v;
                         }
 
+                        @$send_via = $vars['___SEND_VIA___'];
                         @$smtp_json = $vars['___SMTP_JSON___'];
+                        @$graphql_json = $vars['___GRAPHQL_JSON___'];
                         @$from = $vars['___FROM___'];
                         @$sender = $vars['___SENDER___'];
                         @$return_path = $vars['___RETURN_PATH___'];
@@ -255,7 +257,9 @@ class SendMassMailBackgroundWorker
                         $task = [
                             'job_id' => $job_id,
                             'retry_number' => $retry_number,
+                            'send_via' => $send_via,
                             'smtp_json' => $smtp_json,
+                            'graphql_json' => $graphql_json,
                             'from' => $from,
                             'sender' => $sender,
                             'return_path' => $return_path,

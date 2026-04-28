@@ -101,7 +101,7 @@ class Util
 
         $count = 0;
         if (($handle = fopen($csv_file_path, 'r')) !== false) {
-            while (($row = fgetcsv($handle)) !== false) {
+            while (($row = fgetcsv($handle, 0, ',', '"', '\\')) !== false) {
                 $count++;
             }
             fclose($handle);

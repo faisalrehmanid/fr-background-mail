@@ -103,6 +103,8 @@ interface StorageInterface
      * @param string $exception_code
      * @param string $exception_message
      * @param string $exception_json
+     * @param string $graphql_json
+     * @param string $send_via
      * @return void
      */
     public function insertSentLog(
@@ -128,7 +130,9 @@ interface StorageInterface
         $sent_status,
         $exception_code,
         $exception_message,
-        $exception_json
+        $exception_json,
+        $graphql_json,
+        $send_via
     );
 
     /**

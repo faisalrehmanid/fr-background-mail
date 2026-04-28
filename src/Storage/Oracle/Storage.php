@@ -118,7 +118,7 @@ class Storage implements StorageInterface
             JOB_RETRY_NUMBER            NUMBER                 DEFAULT 0,
             MAIL_BACKGROUND_WORKER      VARCHAR2(100 CHAR)     NOT NULL
         );
-        
+
         CREATE UNIQUE INDEX ' . substr($this->jobs_table, 0, 27) . '_PK ON ' . $this->jobs_table . ' (JOB_ID);
         ALTER TABLE ' . $this->jobs_table . ' ADD (
           CONSTRAINT ' . substr($jobs_table_name, 0, 27) . '_PK
@@ -153,11 +153,11 @@ class Storage implements StorageInterface
         );
 
         ALTER TABLE ' . $this->sent_log_table . ' ADD (
-        CONSTRAINT ' . substr($sent_log_table_name, 0, 27) . '_FK 
-        FOREIGN KEY (JOB_ID) 
+        CONSTRAINT ' . substr($sent_log_table_name, 0, 27) . '_FK
+        FOREIGN KEY (JOB_ID)
         REFERENCES ' . $this->jobs_table . ' (JOB_ID)
         ON DELETE CASCADE
-        ENABLE VALIDATE);  
+        ENABLE VALIDATE);
 
         CREATE TABLE ' . $this->templates_table . '
         (
@@ -178,17 +178,17 @@ class Storage implements StorageInterface
         PRIMARY KEY (TEMPLATE_CODE) USING INDEX ' . substr($this->templates_table, 0, 27) . '_PK
         ENABLE VALIDATE); ';
 
-        $script .= ' 
-          -- Insert default email templates for notifications 
+        $script .= '
+          -- Insert default email templates for notifications
 
           INSERT  INTO ' . $this->templates_table . "(TEMPLATE_CODE, TEMPLATE_DESCRIPTION, SMTP_JSON, \"FROM\", \"SUBJECT\", \"BODY\", REPLY_TO, CC, BCC)
-            VALUES ('job_started_template','When background job started','smtp-json','from@test.com','Background Mail Job Started','<p>Dear Concern,</p>\r\n\r\n<p>Your background mail job has been Started. Click on the link below to see updated sent log:</p>\r\n\r\n<p> >> <a href=\"___JOB_DETAILS_URL___\">Click Here To View Job Details</a></p>\r\n\r\n<p>Job summary is given below:</p>\r\n\r\n<table>\r\n	<tr>\r\n		<td>Job ID</td>\r\n		<td>___JOB_ID___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Status</td>\r\n		<td>___JOB_STATUS___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Total Count</td>\r\n		<td>___JOB_TOTAL_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Executed Count</td>\r\n		<td>___JOB_EXECUTED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Sent Count</td>\r\n		<td>___JOB_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Not Sent Count</td>\r\n		<td>___JOB_NOT_SENT_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Percent Completed</td>\r\n		<td>___JOB_PERCENT_COMPLETED___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Time Spent</td>\r\n		<td>___JOB_TIME_SPENT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Started At</td>\r\n		<td>___JOB_STARTED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Ended At</td>\r\n		<td>___JOB_ENDED_AT___</td>\r\n	</tr>\r\n</table>\r\n\r\n<p>*** This is an automatically generated email, please do not reply ***</p>\r\n\r\n<p>Thanks!</p>','reply-to','cc','bcc'); 
-           
-          INSERT  INTO " . $this->templates_table . "(TEMPLATE_CODE, TEMPLATE_DESCRIPTION, SMTP_JSON, \"FROM\", \"SUBJECT\", \"BODY\", REPLY_TO, CC, BCC) 
-            VALUES ('job_completed_template','When background job completed','smtp-json','from@test.com','Background Mail Job Completed','<p>Dear Concern,</p>\r\n\r\n<p>Your background mail job has been Completed. Click on the link below to see updated sent log:</p>\r\n\r\n<p> >> <a href=\"___JOB_DETAILS_URL___\">Click Here To View Job Details</a></p>\r\n\r\n<p>Job summary is given below:</p>\r\n\r\n<table>\r\n	<tr>\r\n		<td>Job ID</td>\r\n		<td>___JOB_ID___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Status</td>\r\n		<td>___JOB_STATUS___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Total Count</td>\r\n		<td>___JOB_TOTAL_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Executed Count</td>\r\n		<td>___JOB_EXECUTED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Sent Count</td>\r\n		<td>___JOB_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Not Sent Count</td>\r\n		<td>___JOB_NOT_SENT_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Percent Completed</td>\r\n		<td>___JOB_PERCENT_COMPLETED___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Time Spent</td>\r\n		<td>___JOB_TIME_SPENT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Started At</td>\r\n		<td>___JOB_STARTED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Ended At</td>\r\n		<td>___JOB_ENDED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Number of Retry</td>\r\n		<td>___JOB_RETRY_NUMBER___</td>\r\n	</tr>\r\n</table>\r\n\r\n<p>*** This is an automatically generated email, please do not reply ***</p>\r\n\r\n<p>Thanks!</p>','reply-to','cc','bcc');
-        
+            VALUES ('job_started_template','When background job started','smtp-json','from@test.com','Background Mail Job Started','<p>Dear Concern,</p>\r\n\r\n<p>Your background mail job has been Started. Click on the link below to see updated sent log:</p>\r\n\r\n<p> >> <a href=\"___JOB_DETAILS_URL___\">Click Here To View Job Details</a></p>\r\n\r\n<p>Job summary is given below:</p>\r\n\r\n<table>\r\n	<tr>\r\n		<td>Job ID</td>\r\n		<td>___JOB_ID___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Status</td>\r\n		<td>___JOB_STATUS___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Total Count</td>\r\n		<td>___JOB_TOTAL_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Executed Count</td>\r\n		<td>___JOB_EXECUTED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Sent Count</td>\r\n		<td>___JOB_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Not Sent Count</td>\r\n		<td>___JOB_NOT_SENT_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Percent Completed</td>\r\n		<td>___JOB_PERCENT_COMPLETED___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Time Spent</td>\r\n		<td>___JOB_TIME_SPENT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Started At</td>\r\n		<td>___JOB_STARTED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Ended At</td>\r\n		<td>___JOB_ENDED_AT___</td>\r\n	</tr>\r\n</table>\r\n\r\n<p>*** This is an automatically generated email, please do not reply ***</p>\r\n\r\n<p>Thanks!</p>','reply-to','cc','bcc');
+
           INSERT  INTO " . $this->templates_table . "(TEMPLATE_CODE, TEMPLATE_DESCRIPTION, SMTP_JSON, \"FROM\", \"SUBJECT\", \"BODY\", REPLY_TO, CC, BCC)
-            VALUES ('job_canceled_template','When background job canceled','smtp-json','from@test.com','Background Mail Job Canceled','<p>Dear Concern,</p>\r\n\r\n<p>Your background mail job has been Canceled. Click on the link below to see updated sent log:</p>\r\n\r\n<p> >> <a href=\"___JOB_DETAILS_URL___\">Click Here To View Job Details</a></p>\r\n\r\n<p>Job summary is given below:</p>\r\n\r\n<table>\r\n	<tr>\r\n		<td>Job ID</td>\r\n		<td>___JOB_ID___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Status</td>\r\n		<td>___JOB_STATUS___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Total Count</td>\r\n		<td>___JOB_TOTAL_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Executed Count</td>\r\n		<td>___JOB_EXECUTED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Sent Count</td>\r\n		<td>___JOB_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Not Sent Count</td>\r\n		<td>___JOB_NOT_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Canceled Count</td>\r\n		<td>___JOB_CANCELED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Percent Completed</td>\r\n		<td>___JOB_PERCENT_COMPLETED___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Time Spent</td>\r\n		<td>___JOB_TIME_SPENT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Started At</td>\r\n		<td>___JOB_STARTED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Canceled At</td>\r\n		<td>___JOB_CANCELED_AT___</td>\r\n	</tr>\r\n</table>\r\n\r\n<p>*** This is an automatically generated email, please do not reply ***</p>\r\n\r\n<p>Thanks!</p>','reply-to','cc','bcc'); 
+            VALUES ('job_completed_template','When background job completed','smtp-json','from@test.com','Background Mail Job Completed','<p>Dear Concern,</p>\r\n\r\n<p>Your background mail job has been Completed. Click on the link below to see updated sent log:</p>\r\n\r\n<p> >> <a href=\"___JOB_DETAILS_URL___\">Click Here To View Job Details</a></p>\r\n\r\n<p>Job summary is given below:</p>\r\n\r\n<table>\r\n	<tr>\r\n		<td>Job ID</td>\r\n		<td>___JOB_ID___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Status</td>\r\n		<td>___JOB_STATUS___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Total Count</td>\r\n		<td>___JOB_TOTAL_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Executed Count</td>\r\n		<td>___JOB_EXECUTED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Sent Count</td>\r\n		<td>___JOB_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Not Sent Count</td>\r\n		<td>___JOB_NOT_SENT_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Percent Completed</td>\r\n		<td>___JOB_PERCENT_COMPLETED___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Time Spent</td>\r\n		<td>___JOB_TIME_SPENT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Started At</td>\r\n		<td>___JOB_STARTED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Ended At</td>\r\n		<td>___JOB_ENDED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Number of Retry</td>\r\n		<td>___JOB_RETRY_NUMBER___</td>\r\n	</tr>\r\n</table>\r\n\r\n<p>*** This is an automatically generated email, please do not reply ***</p>\r\n\r\n<p>Thanks!</p>','reply-to','cc','bcc');
+
+          INSERT  INTO " . $this->templates_table . "(TEMPLATE_CODE, TEMPLATE_DESCRIPTION, SMTP_JSON, \"FROM\", \"SUBJECT\", \"BODY\", REPLY_TO, CC, BCC)
+            VALUES ('job_canceled_template','When background job canceled','smtp-json','from@test.com','Background Mail Job Canceled','<p>Dear Concern,</p>\r\n\r\n<p>Your background mail job has been Canceled. Click on the link below to see updated sent log:</p>\r\n\r\n<p> >> <a href=\"___JOB_DETAILS_URL___\">Click Here To View Job Details</a></p>\r\n\r\n<p>Job summary is given below:</p>\r\n\r\n<table>\r\n	<tr>\r\n		<td>Job ID</td>\r\n		<td>___JOB_ID___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Status</td>\r\n		<td>___JOB_STATUS___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Total Count</td>\r\n		<td>___JOB_TOTAL_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Executed Count</td>\r\n		<td>___JOB_EXECUTED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Sent Count</td>\r\n		<td>___JOB_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Not Sent Count</td>\r\n		<td>___JOB_NOT_SENT_COUNT___</td>\r\n	</tr>\r\n<tr>\r\n		<td>Canceled Count</td>\r\n		<td>___JOB_CANCELED_COUNT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Percent Completed</td>\r\n		<td>___JOB_PERCENT_COMPLETED___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Time Spent</td>\r\n		<td>___JOB_TIME_SPENT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Started At</td>\r\n		<td>___JOB_STARTED_AT___</td>\r\n	</tr>\r\n	<tr>\r\n		<td>Canceled At</td>\r\n		<td>___JOB_CANCELED_AT___</td>\r\n	</tr>\r\n</table>\r\n\r\n<p>*** This is an automatically generated email, please do not reply ***</p>\r\n\r\n<p>Thanks!</p>','reply-to','cc','bcc');
           ";
 
         return $script;
@@ -201,8 +201,8 @@ class Storage implements StorageInterface
      */
     public function createDBStructure()
     {
-        $query = ' SELECT OWNER, 
-                          TABLE_NAME 
+        $query = ' SELECT OWNER,
+                          TABLE_NAME
                     FROM ALL_TABLES
                         WHERE UPPER(OWNER || \'.\' || TABLE_NAME)
                                 IN (:JOBS_TABLE, :SENT_LOG_TABLE, :TEMPLATES_TABLE) ';
@@ -232,8 +232,8 @@ class Storage implements StorageInterface
      */
     public function validateStorage()
     {
-        $query = ' SELECT OWNER, 
-                          TABLE_NAME 
+        $query = ' SELECT OWNER,
+                          TABLE_NAME
                     FROM ALL_TABLES
                         WHERE UPPER(OWNER || \'.\' || TABLE_NAME)
                                 IN (:JOBS_TABLE, :SENT_LOG_TABLE, :TEMPLATES_TABLE) ';
@@ -259,7 +259,7 @@ class Storage implements StorageInterface
         $job_id = strtolower($job_id);
         $exp = $this->DB->getExpression();
 
-        $query = ' SELECT 
+        $query = ' SELECT
                         ' . $exp->getUuid('JOB_ID') . ' JOB_ID,
                         JOB_STATUS,
                         JOB_TOTAL_COUNT,
@@ -307,7 +307,7 @@ class Storage implements StorageInterface
         $WHERE = '';
         $values = [];
 
-        $WHERE .= ' AND ' . $exp->getUuid('JOB_ID') . ' = :JOB_ID 
+        $WHERE .= ' AND ' . $exp->getUuid('JOB_ID') . ' = :JOB_ID
                     AND RETRY_NUMBER = :RETRY_NUMBER
                     AND SENT_STATUS  = :SENT_STATUS ';
         $values = array_merge($values, [
@@ -402,7 +402,7 @@ class Storage implements StorageInterface
      */
     public function getTemplateByCode($template_code)
     {
-        $query = ' SELECT 
+        $query = ' SELECT
                         SMTP_JSON,
                         "FROM",
                         "SUBJECT",
@@ -502,6 +502,8 @@ class Storage implements StorageInterface
      * @param string $exception_code
      * @param string $exception_message
      * @param string $exception_json
+     * @param string $graphql_json
+     * @param string $send_via
      * @return void
      */
     public function insertSentLog(
@@ -527,7 +529,9 @@ class Storage implements StorageInterface
         $sent_status,
         $exception_code,
         $exception_message,
-        $exception_json
+        $exception_json,
+        $graphql_json,
+        $send_via
     ) {
         $exp = $this->DB->getExpression();
 
@@ -555,6 +559,8 @@ class Storage implements StorageInterface
         $data['EXCEPTION_CODE'] = substr(trim($exception_code), 0, 10);
         $data['EXCEPTION_MESSAGE'] = substr(trim($exception_message), 0, 4000);
         $data['EXCEPTION_JSON'] = $exception_json;
+        $data['GRAPHQL_JSON'] = $graphql_json;
+        $data['SEND_VIA'] = $send_via;
 
         $this->DB->insert($this->sent_log_table, $data);
     }
@@ -572,24 +578,24 @@ class Storage implements StorageInterface
     {
         $exp = $this->DB->getExpression();
 
-        $query = ' UPDATE ' . $this->jobs_table . " SET 
-                            JOB_EXECUTED_COUNT = CASE 
-                            WHEN JOB_TOTAL_COUNT > JOB_EXECUTED_COUNT 
-                                THEN (JOB_EXECUTED_COUNT + 1) 
-                            ELSE JOB_EXECUTED_COUNT 
+        $query = ' UPDATE ' . $this->jobs_table . " SET
+                            JOB_EXECUTED_COUNT = CASE
+                            WHEN JOB_TOTAL_COUNT > JOB_EXECUTED_COUNT
+                                THEN (JOB_EXECUTED_COUNT + 1)
+                            ELSE JOB_EXECUTED_COUNT
                         END,
-                    JOB_SENT_COUNT = CASE 
+                    JOB_SENT_COUNT = CASE
                             WHEN JOB_TOTAL_COUNT > JOB_SENT_COUNT AND :SENT_STATUS = 'Sent'
-                                THEN (JOB_SENT_COUNT + 1) 
-                            ELSE JOB_SENT_COUNT 
+                                THEN (JOB_SENT_COUNT + 1)
+                            ELSE JOB_SENT_COUNT
                         END,
-                    JOB_NOT_SENT_COUNT = CASE 
+                    JOB_NOT_SENT_COUNT = CASE
                             WHEN JOB_TOTAL_COUNT > JOB_NOT_SENT_COUNT AND :SENT_STATUS = 'Not Sent'
-                                THEN (JOB_NOT_SENT_COUNT + 1) 
-                            ELSE JOB_NOT_SENT_COUNT 
-                        END,		
-                    JOB_PERCENT_COMPLETED = CASE 
-                            WHEN JOB_TOTAL_COUNT >= (JOB_EXECUTED_COUNT + 1) 
+                                THEN (JOB_NOT_SENT_COUNT + 1)
+                            ELSE JOB_NOT_SENT_COUNT
+                        END,
+                    JOB_PERCENT_COMPLETED = CASE
+                            WHEN JOB_TOTAL_COUNT >= (JOB_EXECUTED_COUNT + 1)
                                 THEN CONCAT(ROUND((((JOB_EXECUTED_COUNT + 1) / JOB_TOTAL_COUNT) * 100)),'%')
                             ELSE JOB_PERCENT_COMPLETED
                         END,
@@ -598,28 +604,28 @@ class Storage implements StorageInterface
                             WHEN (JOB_EXECUTED_COUNT + 1) > 0 THEN 'Processing'
                             ELSE 'Started'
                         END,
-                    JOB_ENDED_AT = CASE 
+                    JOB_ENDED_AT = CASE
                             WHEN JOB_TOTAL_COUNT = (JOB_EXECUTED_COUNT + 1) THEN TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS')
                             ELSE JOB_ENDED_AT
                         END,
-                    JOB_TIME_SPENT = TRIM(BOTH FROM 
-                                        CASE WHEN TRUNC(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - ADD_MONTHS( JOB_STARTED_AT, MONTHS_BETWEEN(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS'), JOB_STARTED_AT))) = 1 THEN 
-                                            TRUNC(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - ADD_MONTHS( JOB_STARTED_AT, MONTHS_BETWEEN(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS'), JOB_STARTED_AT))) || ' Day ' 
-                                            WHEN TRUNC(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - ADD_MONTHS( JOB_STARTED_AT, MONTHS_BETWEEN(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS'), JOB_STARTED_AT))) > 1 THEN 
+                    JOB_TIME_SPENT = TRIM(BOTH FROM
+                                        CASE WHEN TRUNC(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - ADD_MONTHS( JOB_STARTED_AT, MONTHS_BETWEEN(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS'), JOB_STARTED_AT))) = 1 THEN
+                                            TRUNC(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - ADD_MONTHS( JOB_STARTED_AT, MONTHS_BETWEEN(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS'), JOB_STARTED_AT))) || ' Day '
+                                            WHEN TRUNC(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - ADD_MONTHS( JOB_STARTED_AT, MONTHS_BETWEEN(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS'), JOB_STARTED_AT))) > 1 THEN
                                             TRUNC(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - ADD_MONTHS( JOB_STARTED_AT, MONTHS_BETWEEN(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS'), JOB_STARTED_AT))) || ' Days '
                                         ELSE
                                             ''
-                                        END || 
-                                        CASE WHEN TRUNC(24 * MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)) = 1 THEN 
-                                            TRUNC(24 * MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)) || ' Hour '
-                                            WHEN TRUNC(24 * MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)) > 1 THEN 
-                                            TRUNC(24 * MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)) || ' Hours ' 
                                         END ||
-                                        CASE WHEN TRUNC( MOD (MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)*24,1)*60 ) = 1 THEN 
+                                        CASE WHEN TRUNC(24 * MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)) = 1 THEN
+                                            TRUNC(24 * MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)) || ' Hour '
+                                            WHEN TRUNC(24 * MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)) > 1 THEN
+                                            TRUNC(24 * MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)) || ' Hours '
+                                        END ||
+                                        CASE WHEN TRUNC( MOD (MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)*24,1)*60 ) = 1 THEN
                                             TRUNC( MOD (MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)*24,1)*60 ) || ' Minute '
-                                            WHEN TRUNC( MOD (MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)*24,1)*60 ) > 1 THEN 
+                                            WHEN TRUNC( MOD (MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)*24,1)*60 ) > 1 THEN
                                             TRUNC( MOD (MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)*24,1)*60 ) || ' Minutes '
-                                        END || 
+                                        END ||
                                         CASE WHEN ROUND(MOD(MOD(MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)*24,1)*60,1)*60) <= 1 THEN
                                             ROUND(MOD(MOD(MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)*24,1)*60,1)*60) || ' Second '
                                             WHEN ROUND(MOD(MOD(MOD(TO_DATE(:CURRENT_TIME, 'YYYY-MM-DD HH24:MI:SS') - JOB_STARTED_AT,1)*24,1)*60,1)*60) > 1 THEN
@@ -655,7 +661,7 @@ class Storage implements StorageInterface
                     JOB_STATUS = :JOB_STATUS,
                     JOB_CANCELED_COUNT = :JOB_CANCELED_COUNT,
                     JOB_CANCELED_AT  = ' . $date->getFragment() .
-            ' WHERE 
+            ' WHERE
                        ' . $exp->getUuid('JOB_ID') . ' = :JOB_ID ';
         $values = [
             ':JOB_STATUS' => 'Canceled',
